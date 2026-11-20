@@ -1,4 +1,7 @@
-config.php
+# Secrets live in .env (see .env.example); config.php itself holds none.
+.env
+.env.*
+!.env.example
 config.*backup*.php
 vendor/
 storage/*

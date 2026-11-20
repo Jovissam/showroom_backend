@@ -6,8 +6,10 @@ image processing. The frontend talks to it only over REST.
 
 ## Setup (XAMPP)
 
-1. `copy config.example.php config.php`. Set `DB_*`, a random `JWT_SECRET`, and the site's
-   origins in `$_allowedOrigins`.
+1. `copy .env.example .env` and fill it in. You need at least `DB_*` and a random `JWT_SECRET`
+   (`php -r "echo bin2hex(random_bytes(32));"`). Set `CORS_ALLOWED_ORIGINS` to the site's origins.
+   `config.php` holds no secrets: it reads `.env` (via `src/Core/Env.php`), and real server
+   environment variables override the file, so production can skip `.env` entirely.
 2. `php bin/migrate.php`. This creates the database if needed, then the tables, the 9 initial
    categories and the default showroom settings. It is safe to re-run; each migration applies once.
 3. `php bin/admin.php create --email=you@example.com --name="Your Name"`. It prompts for a
