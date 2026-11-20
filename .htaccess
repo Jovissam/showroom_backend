@@ -1,0 +1,30 @@
+# Only the front controller (index.php) and uploaded images are reachable over HTTP.
+# Source, config, migrations, Composer files, storage and CLI scripts are not.
+Options -Indexes
+
+RewriteEngine On
+RewriteBase /jovisco/
+
+# Always HTTPS (except on local hosts). 308 keeps the method and body.
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=308,L,NE]
+
+# Pass the Authorization header through to PHP (needed under CGI/FastCGI).
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Block internal directories outright.
+RewriteRule ^(src|routes|migrations|vendor|storage|bin)(/|$) - [F,L]
+
+# Block data/config files by extension, and any PHP file other than index.php
+# (config.php, backups, anything under uploads/). The lookahead lets the internal rewrite through.
+RewriteRule \.(sql|lock|json|md|log|env|ini|bak|txt|sh|zip|tar|gz|tgz|rar|7z)$ - [F,L,NC]
+RewriteRule ^(?!index\.php$).+\.(php|phtml|phar)$ - [F,L,NC]
+RewriteRule (^|/)\. - [F,L]
+
+# Serve real files directly (uploads/); route everything else to the front controller.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

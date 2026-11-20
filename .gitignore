@@ -1,0 +1,8 @@
+config.php
+config.*backup*.php
+vendor/
+storage/*
+!storage/.htaccess
+uploads/*
+!uploads/.htaccess
+*.sql.gz

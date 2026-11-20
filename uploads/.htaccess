@@ -1,0 +1,28 @@
+# Uploaded portfolio images. Every file here was decoded and re-encoded as WebP by the API
+# under a random name; nothing in this folder may ever be executed or listed.
+Options -Indexes -ExecCGI
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pl .py .cgi .sh
+RemoveType .php .phtml .phar
+SetHandler none
+
+# Only images are served; anything else is refused.
+<FilesMatch ".">
+    Require all denied
+</FilesMatch>
+<FilesMatch "\.(webp|jpe?g|png)$">
+    Require all granted
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Security-Policy "default-src 'none'; sandbox"
+    # File names are random and never reused, so they can be cached for a long time.
+    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header set Cross-Origin-Resource-Policy "cross-origin"
+</IfModule>
